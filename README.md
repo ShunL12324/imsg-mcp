@@ -48,10 +48,7 @@ cloudflare:
 api_token: ""          # Shared secret for Shortcut → worker auth (openssl rand -hex 32)
 ```
 
-Config is searched in order:
-1. `./config.yaml` (repo root)
-2. `<cwd>/config.yaml`
-3. `~/.imsg-forwarder/config.yaml`
+Config location: `config.yaml` in the repo root (next to `package.json`).
 
 ### Cloudflare API token
 

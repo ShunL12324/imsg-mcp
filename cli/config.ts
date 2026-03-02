@@ -1,13 +1,7 @@
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
-import { homedir } from "os";
 
-// Search order: repo root → CWD → home dir
-const SEARCH_PATHS = [
-  join(import.meta.dir, "..", "config.yaml"),
-  join(process.cwd(), "config.yaml"),
-  join(homedir(), ".imsg-forwarder", "config.yaml"),
-];
+const CONFIG_PATH = join(import.meta.dir, "..", "config.yaml");
 
 export interface Config {
   cloudflare: {
@@ -39,7 +33,6 @@ function parseYaml(text: string): Record<string, unknown> {
 
     if (!indented) {
       if (!rawValue) {
-        // Section header: "cloudflare:" with no value
         currentSection = key;
         root[currentSection] = {};
       } else {
@@ -53,34 +46,24 @@ function parseYaml(text: string): Record<string, unknown> {
   return root;
 }
 
-export function findConfigPath(): string | null {
-  for (const p of SEARCH_PATHS) {
-    if (existsSync(p)) return p;
-  }
-  return null;
-}
-
 export function loadConfig(): Config {
-  const configPath = findConfigPath();
-  if (!configPath) {
+  if (!existsSync(CONFIG_PATH)) {
     console.error(
-      "config.yaml not found.\n" +
-      "Copy config.example.yaml → config.yaml and fill in your values.\n" +
-      "Searched:\n" +
-      SEARCH_PATHS.map((p) => `  ${p}`).join("\n")
+      `config.yaml not found at ${CONFIG_PATH}\n` +
+      "Copy config.example.yaml → config.yaml and fill in your values."
     );
     process.exit(1);
   }
 
-  const raw = parseYaml(readFileSync(configPath, "utf8"));
+  const raw = parseYaml(readFileSync(CONFIG_PATH, "utf8"));
   const cf = (raw.cloudflare ?? {}) as Record<string, string>;
 
   return {
     cloudflare: {
       account_id:  cf.account_id  ?? "",
       api_token:   cf.api_token   ?? "",
-      worker_name: cf.worker_name || "imsg-forwarder",
-      db_name:     cf.db_name     || "imsg-forwarder",
+      worker_name: cf.worker_name || "imsg-mcp",
+      db_name:     cf.db_name     || "imsg-mcp",
     },
     api_token:  (raw.api_token  as string) ?? "",
     worker_url: (raw.worker_url as string) ?? "",

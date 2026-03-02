@@ -1,7 +1,7 @@
 {
-  "name": "imsg-mcp-daemon",
+  "name": "imsg-mcp-cli",
   "version": "1.0.0",
-  "description": "iMessage → Cloudflare forwarder daemon",
+  "description": "iMessage → Cloudflare forwarder cli",
   "module": "index.ts",
   "scripts": {
     "start": "bun run index.ts",

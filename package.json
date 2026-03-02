@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "deploy":   "bun run daemon/index.ts --deploy",
-    "undeploy": "bun run daemon/index.ts --undeploy",
-    "doctor":   "bun run daemon/index.ts --doctor"
+    "deploy":   "bun run cli/index.ts --deploy",
+    "undeploy": "bun run cli/index.ts --undeploy",
+    "doctor":   "bun run cli/index.ts --doctor"
   },
-  "workspaces": ["daemon", "worker"]
+  "workspaces": ["cli", "worker"]
 }
