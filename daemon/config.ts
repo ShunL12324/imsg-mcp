@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from "fs";
-import { join, dirname } from "path";
+import { join } from "path";
 import { homedir } from "os";
 
-// Search order: next to binary → CWD → home dir
+// Search order: repo root → CWD → home dir
 const SEARCH_PATHS = [
-  join(dirname(process.execPath), "config.yaml"),
+  join(import.meta.dir, "..", "config.yaml"),
   join(process.cwd(), "config.yaml"),
   join(homedir(), ".imsg-forwarder", "config.yaml"),
 ];

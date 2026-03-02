@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "bun run build.ts",
-    "start": "bun run daemon/index.ts"
+    "deploy":   "bun run daemon/index.ts --deploy",
+    "undeploy": "bun run daemon/index.ts --undeploy",
+    "doctor":   "bun run daemon/index.ts --doctor"
   },
   "workspaces": ["daemon", "worker"]
 }

@@ -1,25 +1,21 @@
+import { readFileSync } from "fs";
+import { join } from "path";
 import { CloudflareAPI } from "./cf-api.ts";
 import { loadState, saveState } from "./state.ts";
 import { log } from "./logger.ts";
 import type { Config } from "./config.ts";
-import { join } from "path";
+
+const ROOT = join(import.meta.dir, "..");
 
 async function buildWorkerBundle(): Promise<string> {
-  const { WORKER_BUNDLE } = await import("./worker-bundle.ts");
-  if (WORKER_BUNDLE) return WORKER_BUNDLE;
-
-  // Fallback: build on the fly in dev mode (not used in compiled binary)
-  log.warn("worker-bundle.ts is empty — building worker on the fly");
-  const entry = join(import.meta.dir, "../worker/src/index.ts");
+  const entry = join(ROOT, "worker/src/index.ts");
   const result = await Bun.build({ entrypoints: [entry], target: "browser", format: "esm", minify: true });
   if (!result.success) throw new Error("Worker bundle failed:\n" + result.logs.join("\n"));
-  return result.outputs[0].text();
+  return result.outputs[0]!.text();
 }
 
-async function getSchema(): Promise<string> {
-  const { SCHEMA_SQL } = await import("./schema-bundle.ts");
-  if (SCHEMA_SQL) return SCHEMA_SQL;
-  throw new Error("schema-bundle.ts is empty — run build.ts first");
+function getSchema(): string {
+  return readFileSync(join(ROOT, "schema.sql"), "utf8");
 }
 
 function splitSql(sql: string): string[] {

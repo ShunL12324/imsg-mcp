@@ -22,41 +22,20 @@ iPhone (incoming message)
 
 - iPhone running iOS 17+
 - Cloudflare account (free tier is sufficient)
-- [Bun](https://bun.sh) ≥ 1.0 (for building the management CLI from source)
+- [Bun](https://bun.sh) ≥ 1.0
 
-## Installation
-
-### Pre-built binary
-
-Download the latest binary from [Releases](../../releases):
-
-```bash
-sudo cp imsg-forwarder /usr/local/bin/imsg-forwarder
-sudo codesign --force --sign - /usr/local/bin/imsg-forwarder
-```
-
-> **Required after every binary update:** macOS AMFI invalidates trust when a binary is replaced. Re-signing with `-` (ad-hoc) restores it.
-
-### Build from source
+## Setup
 
 ```bash
 git clone https://github.com/ShunL12324/imsg-forwarder.git
 cd imsg-forwarder
 bun install
-bun run build.ts
-sudo cp dist/imsg-forwarder /usr/local/bin/imsg-forwarder
-sudo codesign --force --sign - /usr/local/bin/imsg-forwarder
 ```
-
-Output binaries:
-- `dist/imsg-forwarder` — Apple Silicon (arm64)
-- `dist/imsg-forwarder-x64` — Intel (x64)
 
 ## Configuration
 
 ```bash
-mkdir -p ~/.imsg-forwarder
-cp config.example.yaml ~/.imsg-forwarder/config.yaml
+cp config.example.yaml config.yaml
 ```
 
 Edit `config.yaml`:
@@ -72,8 +51,8 @@ api_token: ""          # Shared secret for Shortcut → worker auth (openssl ran
 ```
 
 Config is searched in order:
-1. `<binary directory>/config.yaml`
-2. `./config.yaml`
+1. `./config.yaml` (repo root)
+2. `<cwd>/config.yaml`
 3. `~/.imsg-forwarder/config.yaml`
 
 ### Cloudflare API token
@@ -92,7 +71,7 @@ Create a token at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudfla
 Provisions the Cloudflare Worker and D1 database.
 
 ```bash
-imsg-forwarder --deploy
+bun run deploy
 ```
 
 ### Diagnostics
@@ -100,7 +79,7 @@ imsg-forwarder --deploy
 Checks config completeness, Cloudflare token validity, Workers/D1 permissions, and worker reachability.
 
 ```bash
-imsg-forwarder --doctor
+bun run doctor
 ```
 
 ### Undeploy
@@ -108,7 +87,7 @@ imsg-forwarder --doctor
 Removes the Cloudflare Worker and D1 database.
 
 ```bash
-imsg-forwarder --undeploy
+bun run undeploy
 ```
 
 ## iOS Shortcut setup

@@ -1,11 +1,6 @@
-dist/
 node_modules/
 daemon/node_modules/
 worker/node_modules/
-
-# Generated at build time
-daemon/worker-bundle.ts
-daemon/schema-bundle.ts
 
 # User config (contains secrets)
 config.yaml
