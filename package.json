@@ -1,0 +1,10 @@
+{
+  "name": "imsg-forwarder",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "bun run build.ts",
+    "start": "bun run daemon/index.ts"
+  },
+  "workspaces": ["daemon", "worker"]
+}

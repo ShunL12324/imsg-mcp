@@ -1,0 +1,22 @@
+# imsg-forwarder configuration
+# Copy to config.yaml and fill in your values.
+
+cloudflare:
+  # Cloudflare account ID (found at dash.cloudflare.com → right sidebar)
+  account_id: ""
+
+  # Cloudflare API token with Workers:Edit + D1:Edit permissions
+  # Create at dash.cloudflare.com/profile/api-tokens
+  api_token: ""
+
+  # Name for the deployed Worker and D1 database (can be anything)
+  worker_name: "imsg-forwarder"
+  db_name: "imsg-forwarder"
+
+# Shared secret used to authenticate daemon → worker requests.
+# Generate with: openssl rand -hex 32
+api_token: ""
+
+# (Optional) Override the worker URL if you deployed manually instead of
+# using --deploy. Leave empty to use the URL saved by --deploy.
+worker_url: ""

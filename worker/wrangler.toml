@@ -1,0 +1,12 @@
+name = "imsg-forwarder"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+[[d1_databases]]
+binding     = "DB"
+database_name = "imsg-forwarder"
+database_id   = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+[vars]
+# Set the real value with: wrangler secret put API_TOKEN
+API_TOKEN = ""

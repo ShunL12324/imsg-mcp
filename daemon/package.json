@@ -1,0 +1,16 @@
+{
+  "name": "imsg-forwarder-daemon",
+  "version": "1.0.0",
+  "description": "iMessage → Cloudflare forwarder daemon",
+  "module": "index.ts",
+  "scripts": {
+    "start": "bun run index.ts",
+    "build": "bun run ../build.ts"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
