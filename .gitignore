@@ -4,6 +4,7 @@ worker/node_modules/
 
 # User config (contains secrets)
 config.yaml
+.mcp.json
 
 # Runtime state
 ~/.imsg-forwarder/
