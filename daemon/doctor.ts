@@ -1,32 +1,12 @@
-import { existsSync } from "fs";
-import { join } from "path";
-import { homedir } from "os";
-import { Database } from "bun:sqlite";
 import { CloudflareAPI } from "./cf-api.ts";
 import { loadState } from "./state.ts";
 import { log } from "./logger.ts";
 import type { Config } from "./config.ts";
 
-const CHAT_DB = join(homedir(), "Library/Messages/chat.db");
-
 interface Check { name: string; ok: boolean; detail: string }
 
 const pass = (name: string, detail: string): Check => ({ name, ok: true,  detail });
 const fail = (name: string, detail: string): Check => ({ name, ok: false, detail });
-
-function checkChatDb(): Check {
-  if (!existsSync(CHAT_DB)) {
-    return fail("chat.db", `Not found at ${CHAT_DB}. Grant Full Disk Access to Terminal in System Settings → Privacy & Security.`);
-  }
-  try {
-    const db = new Database(CHAT_DB, { readonly: true });
-    const row = db.query<{ count: number }, []>("SELECT COUNT(*) as count FROM message").get();
-    db.close();
-    return pass("chat.db", `Readable — ${row?.count ?? 0} messages`);
-  } catch (err) {
-    return fail("chat.db", `Exists but unreadable: ${err}`);
-  }
-}
 
 function checkConfig(config: Config): Check {
   const missing: string[] = [];
@@ -92,13 +72,12 @@ export async function doctor(config: Config): Promise<void> {
   log.info("Running diagnostics...");
 
   const cfChecks = await checkCfCredentials(config);
-  const [chatDbCheck, configCheck, workerCheck] = await Promise.all([
-    Promise.resolve(checkChatDb()),
+  const [configCheck, workerCheck] = await Promise.all([
     Promise.resolve(checkConfig(config)),
     checkWorker(config),
   ]);
 
-  const checks = [chatDbCheck, configCheck, ...cfChecks, workerCheck];
+  const checks = [configCheck, ...cfChecks, workerCheck];
 
   let allOk = true;
   for (const c of checks) {

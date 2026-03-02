@@ -13,7 +13,6 @@ export interface DeployedResources {
 }
 
 export interface State {
-  lastRowid: number;
   deployed?: DeployedResources;
 }
 
@@ -25,7 +24,7 @@ export function loadState(): State {
       // corrupted state, start fresh
     }
   }
-  return { lastRowid: 0 };
+  return {};
 }
 
 export function saveState(state: State): void {

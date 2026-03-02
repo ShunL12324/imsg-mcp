@@ -6,10 +6,7 @@ export interface Env {
 }
 
 interface MessagePayload {
-  guid: string;
   text: string | null;
-  is_from_me: boolean;
-  timestamp: number;
   sender: string | null;
   chat_identifier: string | null;
 }
@@ -30,41 +27,23 @@ function isAuthorized(request: Request, env: Env): boolean {
   return auth === `Bearer ${env.API_TOKEN}`;
 }
 
-// POST /messages  — batch insert from daemon
+// POST /messages  — insert a single message from iOS Shortcut
 async function handlePost(request: Request, env: Env): Promise<Response> {
-  let messages: MessagePayload[];
+  let msg: MessagePayload;
   try {
-    messages = (await request.json()) as MessagePayload[];
+    msg = (await request.json()) as MessagePayload;
   } catch {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return new Response("Expected non-empty array", { status: 400 });
-  }
+  const result = await env.DB.prepare(
+    `INSERT INTO messages (text, sender, chat_identifier)
+     VALUES (?, ?, ?)`
+  )
+    .bind(msg.text ?? null, msg.sender ?? null, msg.chat_identifier ?? null)
+    .run();
 
-  const stmt = env.DB.prepare(
-    `INSERT OR IGNORE INTO messages
-       (guid, text, sender, is_from_me, chat_identifier, timestamp)
-     VALUES (?, ?, ?, ?, ?, ?)`
-  );
-
-  // Batch all inserts in a single transaction
-  const results = await env.DB.batch(
-    messages.map((m) =>
-      stmt.bind(
-        m.guid,
-        m.text ?? null,
-        m.sender ?? null,
-        m.is_from_me ? 1 : 0,
-        m.chat_identifier ?? null,
-        m.timestamp
-      )
-    )
-  );
-
-  const inserted = results.filter((r) => r.meta.changes > 0).length;
-  return json({ ok: true, inserted, total: messages.length });
+  return json({ ok: true, id: result.meta.last_row_id });
 }
 
 // GET /messages  — query stored messages
@@ -79,7 +58,7 @@ async function handleGet(request: Request, env: Env): Promise<Response> {
   const bindings: (string | number)[] = [];
 
   if (before) {
-    conditions.push("timestamp < ?");
+    conditions.push("received_at < ?");
     bindings.push(parseInt(before));
   }
   if (sender) {
@@ -90,7 +69,7 @@ async function handleGet(request: Request, env: Env): Promise<Response> {
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
   }
-  query += " ORDER BY timestamp DESC LIMIT ?";
+  query += " ORDER BY received_at DESC LIMIT ?";
   bindings.push(limit);
 
   const { results } = await env.DB.prepare(query)
