@@ -1,5 +1,5 @@
 {
-  "name": "imsg-forwarder-daemon",
+  "name": "imsg-mcp-daemon",
   "version": "1.0.0",
   "description": "iMessage → Cloudflare forwarder daemon",
   "module": "index.ts",

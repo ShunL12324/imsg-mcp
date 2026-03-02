@@ -1,8 +1,6 @@
-# imsg-forwarder
+# imsg-mcp
 
-Forward iMessages to a Cloudflare Worker + D1 database in real time using iOS Shortcuts.
-
-An iOS Shortcut automation fires on every incoming message and POSTs it to a self-hosted Cloudflare Worker, where it is stored in a D1 (SQLite) database queryable over HTTP.
+Forward iMessages to a Cloudflare Worker + D1 database via iOS Shortcuts, with an MCP server for AI access.
 
 ## Architecture
 
@@ -27,7 +25,7 @@ iPhone (incoming message)
 ## Setup
 
 ```bash
-git clone https://github.com/ShunL12324/imsg-forwarder.git
+git clone https://github.com/ShunL12324/imsg-mcp.git
 cd imsg-forwarder
 bun install
 ```
